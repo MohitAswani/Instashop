@@ -15,6 +15,8 @@ const User = require('./models/user');
 
 const errorController = require('./controllers/error');
 
+const { fileStorage,getFileStream } = require('./util/s3');
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
@@ -31,29 +33,13 @@ const store = new MongoDBStore({
 
 const csrfprotection = csurf({});
 
-const fileStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'images');
-    },
-    filename: (req, file, cb) => {
-        crypto.randomBytes(16, (err, buf) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                cb(null, buf.toString('hex') + '-' + file.originalname);
-            }
-        });
-    }
-});
-
-const fileFilter = (req, file, cb) => {  
+const fileFilter = (req, file, cb) => {
 
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true); 
+        cb(null, true);
     }
     else {
-        cb(null, false); 
+        cb(null, false);
     }
 }
 
@@ -85,7 +71,12 @@ app.set('views', 'views');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/images',express.static(path.join(__dirname, 'images')));  
+app.get('/image/:key', (req,res,next)=>{
+    const key=req.params.key;
+    const readStream = getFileStream(key);
+
+    readStream.pipe(res);
+});
 
 app.use((req, res, next) => {
     if (!req.session.user) {
@@ -124,8 +115,7 @@ app.use((error, req, res, next) => {
 
     console.log(error);
 
-    if(error.httpStatusCode===404)
-    {
+    if (error.httpStatusCode === 404) {
         return res.status(404).render('404', { pageTitle: 'Page Not found', path: {} });
     }
 

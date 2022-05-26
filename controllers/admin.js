@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-const fileHelper = require('../util/file');
+const {deleteFile} = require('../util/s3');
 
 const { validationResult } = require('express-validator');
 const { default: mongoose } = require('mongoose');
@@ -57,7 +57,7 @@ exports.postAddProduct = (req, res, next) => {
         });
     }
 
-    const imageUrl = image.path;
+    const imageUrl = image.key;
 
     stripe.products.create({
         name: title,
@@ -96,10 +96,6 @@ exports.postAddProduct = (req, res, next) => {
             error.httpStatusCode = 500;
             return next(error);
         })
-
-
-
-
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -174,10 +170,6 @@ exports.postEditProduct = (req, res, next) => {
             product.price = price;
             product.description = description;
 
-            if (image) {
-                fileHelper.deleteFile(product.image);
-                product.image = image.path;
-            }
 
             return stripe.prices.update(
                 product.stripePriceId,
@@ -201,6 +193,10 @@ exports.postEditProduct = (req, res, next) => {
                     );
                 })
                 .then(productObj => {
+                    if (image) {
+                        deleteFile(product.image);
+                        product.image = image.key;
+                    }
                     return product.save();
                 })
                 .then(result => {
@@ -263,7 +259,7 @@ exports.deleteProduct = (req, res, next) => {
             if (!product) {
                 return next(new Error('Product not found.'));
             }
-            fileHelper.deleteFile(product.image);
+            deleteFile(product.image);
             return stripe.products.update(
                 product.stripeProductId,
                 { active: false }

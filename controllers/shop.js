@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
 
 const PDFDocument = require('pdfkit');
 const stripe = require('stripe')(process.env.TEST_SECRET_KEY);
+
+const {uploadFile} = require('../util/s3');
 
 const Product = require('../models/product');
 const Order = require('../models/order');
@@ -345,9 +345,7 @@ exports.getInvoice = (req, res, next) => {
             }
 
             const invoiceName = 'invoice-' + orderId + '.pdf';
-            const invoicePath = path.join('data', 'invoices', invoiceName);
             const pdfDoc = new PDFDocument();
-            pdfDoc.pipe(fs.createWriteStream(invoicePath));
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
@@ -376,6 +374,8 @@ exports.getInvoice = (req, res, next) => {
             pdfDoc.fontSize(18).text(`Total price : ${totalPrice}`);
 
             pdfDoc.end();
+
+            uploadFile(pdfDoc,invoiceName);
         })
         .catch(err => {
             next(err);
