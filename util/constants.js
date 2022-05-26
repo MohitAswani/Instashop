@@ -1,3 +1,3 @@
-const ITEMS_PER_PAGE = 8;
+const ITEMS_PER_PAGE = 9;
 
 module.exports=ITEMS_PER_PAGE;
