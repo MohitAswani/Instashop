@@ -139,7 +139,7 @@ app.use((error, req, res, next) => {
 mongoose.connect(MONGODB_URI)
     .then(result => {
         console.log('Connection successful');
-        app.listen(3000);
+        app.listen(process.env.HOST);
     })
     .catch(err => {
         console.log(err);
