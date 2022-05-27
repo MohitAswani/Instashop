@@ -22,7 +22,7 @@ exports.getProducts = (req, res, next) => {
         .then(products => {
             res.render('shop/product-list.ejs', {
                 prods: products,
-                pageTitle: 'Shop from shop.js',
+                pageTitle: 'Products',
                 path: '/products',
                 currentPage: page,
                 hasNextPage: ITEMS_PER_PAGE * parseInt(page) < totalItems,
@@ -70,7 +70,7 @@ exports.getIndex = (req, res, next) => {
         .then(products => {
             res.render('shop/index.ejs', {
                 prods: products,
-                pageTitle: 'Shop from shop.js',
+                pageTitle: 'Shop',
                 path: '/',
                 currentPage: page,
                 hasNextPage: ITEMS_PER_PAGE * parseInt(page) < totalItems,
