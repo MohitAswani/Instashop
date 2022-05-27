@@ -45,9 +45,12 @@
 
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         
-                        <button class="sub-btn bn5" type="submit">
-                                <% if(editing) {%>Update product<% }else { %> Add Product <% } %>
-                        </button>
+                        <div class="centered">
+                            <button class="sub-btn bn5 centered" type="submit">
+                                    <% if(editing) {%>Update product<% }else { %> Add Product <% } %>
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </main>

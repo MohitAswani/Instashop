@@ -6,9 +6,9 @@
     <main>
         <% if(orders.length>0){ %>
             <ul>
-                <% orders.forEach(order=>{ %> 
+                <% orders.forEach((order,index)=>{ %> 
                     <li>
-                        <h1 style="display: inline-block;"># <%= order._id %></h1> - <a href="/orders/<%= order._id %>" target="_blank">Invoice</a>
+                        <h1 style="display: inline-block;"># Order <%= index+1 %> </h1> - <a href="/orders/<%= order._id %>" target="_blank">Invoice</a>
                         <ul>
                             <% order.products.forEach(item=>{ %>
                                 <li><%= item.product.title %> (<%= item.quantity %>) </li>
