@@ -10,6 +10,7 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csurf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
+const compression = require('compression');
 
 const User = require('./models/user');
 
@@ -42,6 +43,8 @@ const fileFilter = (req, file, cb) => {
         cb(null, false);
     }
 }
+
+app.use(compression());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
